@@ -47,7 +47,7 @@ namespace TollBooth
             }
 
             return exportedCount == 0
-                ? req.CreateResponse(HttpStatusCode.NoContent)
+                ? req.CreateResponse(HttpStatusCode.NotFound) // .NoContent)
                 : req.CreateResponse(HttpStatusCode.OK, $"Exported {exportedCount} license plates");
         }
     }
