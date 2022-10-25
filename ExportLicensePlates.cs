@@ -49,9 +49,17 @@ namespace TollBooth
 
             log.LogWarning("exported count: " + exportedCount.ToString() + " bool: " + (exportedCount == 0).ToString());
 
+            if (exportedCount == 0)
+            {
+                req.CreateResponse(HttpStatusCode.NoContent);
+            }
+            else
+            {
+                req.CreateResponse(HttpStatusCode.OK);
+            }
             return exportedCount == 0
-                ? req.CreateResponse(HttpStatusCode.NoContent)
-                : req.CreateResponse(HttpStatusCode.OK, $"Exported {exportedCount} license plates");
+              ? req.CreateResponse(HttpStatusCode.NoContent)
+              : req.CreateResponse(HttpStatusCode.OK, $"Exported {exportedCount} license plates");
         }
     }
 }
