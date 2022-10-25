@@ -51,15 +51,15 @@ namespace TollBooth
 
             if (exportedCount == 0)
             {
-                req.CreateResponse(HttpStatusCode.NoContent);
+                return req.CreateResponse(HttpStatusCode.NoContent);
             }
             else
             {
-                req.CreateResponse(HttpStatusCode.OK);
+                return req.CreateResponse(200);
             }
-            return exportedCount == 0
-              ? req.CreateResponse(HttpStatusCode.NoContent)
-              : req.CreateResponse(HttpStatusCode.OK, $"Exported {exportedCount} license plates");
+            //return exportedCount == 0
+              //? req.CreateResponse(HttpStatusCode.NoContent)
+              //: req.CreateResponse(HttpStatusCode.InternalServerError, $"Exported {exportedCount} license plates");
         }
     }
 }
