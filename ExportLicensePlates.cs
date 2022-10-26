@@ -27,18 +27,18 @@ namespace TollBooth
             {
                 log.LogInformation($"Retrieved {licensePlates.Count} license plates");
                 var fileMethods = new FileMethods(log);
-//                var uploaded = await fileMethods.GenerateAndSaveCsv(licensePlates);
-//                if (uploaded)
-//                {
-//                    await databaseMethods.MarkLicensePlatesAsExported(licensePlates);
-//                    exportedCount = licensePlates.Count;
-//                    log.LogInformation("Finished updating the license plates");
-//                }
-//                else
-//                {
-//                    log.LogInformation(
-//                        "Export file could not be uploaded. Skipping database update that marks the documents as exported.");
-//                }
+                var uploaded = await fileMethods.GenerateAndSaveCsv(licensePlates);
+                if (uploaded)
+                {
+                    await databaseMethods.MarkLicensePlatesAsExported(licensePlates);
+                    exportedCount = licensePlates.Count;
+                    log.LogInformation("Finished updating the license plates");
+                }
+                else
+                {
+                    log.LogInformation(
+                        "Export file could not be uploaded. Skipping database update that marks the documents as exported.");
+                }
 
                 log.LogInformation($"Exported {exportedCount} license plates");
             }

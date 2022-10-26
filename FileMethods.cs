@@ -53,7 +53,7 @@ namespace TollBooth
 
                         // Retrieve reference to a blob.
                         var blob = container.GetBlockBlobReference(blobName);
-                        await container.CreateIfNotExistsAsync();
+                        ////await container.CreateIfNotExistsAsync();
 
                         // Upload blob.
                         stream.Position = 0;
