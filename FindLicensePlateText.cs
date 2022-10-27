@@ -36,7 +36,7 @@ namespace TollBooth
             return await MakeOCRRequest(imageBytes);
         }
 
-        private async Task<string> MakeOCRRequest(byte[] imageBytes)
+            private async Task<string> MakeOCRRequest(byte[] imageBytes)
         {
             _log.LogInformation("Making OCR request");
             var licensePlate = string.Empty;
@@ -111,25 +111,34 @@ namespace TollBooth
         /// </summary>
         /// <param name="result">The extracted text.</param>
         /// <returns></returns>
-        private static string GetLicensePlateTextFromResult(OCRResult result)
+        private string GetLicensePlateTextFromResult(OCRResult result)
         {
+            _log.LogInformation("GetLicensePlateTextFromResult");
             var text = string.Empty;
             if (result.Regions == null || result.Regions.Length == 0) return string.Empty;
 
             const string states = "ALABAMA,ALASKA,ARIZONA,ARKANSAS,CALIFORNIA,COLORADO,CONNECTICUT,DELAWARE,FLORIDA,GEORGIA,HAWAII,IDAHO,ILLINOIS,INDIANA,IOWA,KANSAS,KENTUCKY,LOUISIANA,MAINE,MARYLAND,MASSACHUSETTS,MICHIGAN,MINNESOTA,MISSISSIPPI,MISSOURI,MONTANA,NEBRASKA,NEVADA,NEW HAMPSHIRE,NEW JERSEY,NEW MEXICO,NEW YORK,NORTH CAROLINA,NORTH DAKOTA,OHIO,OKLAHOMA,OREGON,PENNSYLVANIA,RHODE ISLAND,SOUTH CAROLINA,SOUTH DAKOTA,TENNESSEE,TEXAS,UTAH,VERMONT,VIRGINIA,WASHINGTON,WEST VIRGINIA,WISCONSIN,WYOMING";
             string[] chars = { ",", ".", "/", "!", "@", "#", "$", "%", "^", "&", "*", "'", "\"", ";", "_", "(", ")", ":", "|", "[", "]" };
-            var stateList = states.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-
-            // We are only interested in the first region found, and only the first two lines within the region.
-            foreach (var line in result.Regions[0].Lines.Take(2))
+            var stateList = states.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);            
+            
+            try
             {
-                // Exclude the state name.
-                if (stateList.Contains(line.Words[0].Text.ToUpper())) continue;
-                foreach (var word in line.Words)
+
+                // We are only interested in the first region found, and only the first two lines within the region.
+                foreach (var line in result.Regions[0].Lines.Take(2))
                 {
-                    if (!string.IsNullOrWhiteSpace(word.Text))
-                        text += (RemoveSpecialCharacters(word.Text)) + " "; // Spaces are valid in a license plate.
+                    // Exclude the state name.
+                    if (stateList.Contains(line.Words[0].Text.ToUpper())) continue;
+                    foreach (var word in line.Words)
+                    {
+                        if (!string.IsNullOrWhiteSpace(word.Text))
+                            text += (RemoveSpecialCharacters(word.Text)) + " "; // Spaces are valid in a license plate.
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+                _log.LogCritical($"Critical error: {e.Message}", e);
             }
 
             return text.ToUpper().Trim();

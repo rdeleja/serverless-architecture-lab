@@ -22,28 +22,35 @@ namespace TollBooth
 
             var databaseMethods = new DatabaseMethods(log);
             var licensePlates = databaseMethods.GetLicensePlatesToExport();
-            if (licensePlates.Any())
+            try
             {
-                log.LogInformation($"Retrieved {licensePlates.Count} license plates");
-                var fileMethods = new FileMethods(log);
-                var uploaded = await fileMethods.GenerateAndSaveCsv(licensePlates);
-                if (uploaded)
+                if (licensePlates.Any())
                 {
-                    await databaseMethods.MarkLicensePlatesAsExported(licensePlates);
-                    exportedCount = licensePlates.Count;
-                    log.LogInformation("Finished updating the license plates");
+                    log.LogInformation($"Retrieved {licensePlates.Count} license plates");
+                    var fileMethods = new FileMethods(log);
+                    var uploaded = await fileMethods.GenerateAndSaveCsv(licensePlates);
+                    if (uploaded)
+                    {
+                        await databaseMethods.MarkLicensePlatesAsExported(licensePlates);
+                        exportedCount = licensePlates.Count;
+                        log.LogInformation("Finished updating the license plates");
+                    }
+                    else
+                    {
+                        log.LogInformation(
+                            "Export file could not be uploaded. Skipping database update that marks the documents as exported.");
+                    }
+
+                    log.LogInformation($"Exported {exportedCount} license plates");
                 }
                 else
                 {
-                    log.LogInformation(
-                        "Export file could not be uploaded. Skipping database update that marks the documents as exported.");
+                    log.LogWarning("No license plates to export");
                 }
-
-                log.LogInformation($"Exported {exportedCount} license plates");
             }
-            else
+            catch (Exception e)
             {
-                log.LogWarning("No license plates to export");
+                log.LogCritical($"Critical error: {e.Message}", e);
             }
 
             return exportedCount == 0
