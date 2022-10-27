@@ -5,7 +5,6 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using CsvHelper;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
@@ -47,19 +46,9 @@ namespace TollBooth
                 log.LogWarning("No license plates to export");
             }
 
-            log.LogWarning("exported count: " + exportedCount.ToString() + " bool: " + (exportedCount == 0).ToString());
-
-            if (exportedCount == 0)
-            {
-                return req.CreateResponse(HttpStatusCode.NoContent);
-            }
-            else
-            {
-                return req.CreateResponse(200);
-            }
-            //return exportedCount == 0
-              //? req.CreateResponse(HttpStatusCode.NoContent)
-              //: req.CreateResponse(HttpStatusCode.InternalServerError, $"Exported {exportedCount} license plates");
+            return exportedCount == 0
+                ? req.CreateResponse(HttpStatusCode.NoContent)
+                : req.CreateResponse(HttpStatusCode.OK, $"Exported {exportedCount} license plates");
         }
     }
 }
