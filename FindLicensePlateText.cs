@@ -124,7 +124,7 @@ namespace TollBooth
             try
             {
 
-                // We are only interested in the first region found, and only the first two lines within the region.
+                // We are only interested in the first region found, and only the first two lines within the region...
                 foreach (var line in result.Regions[0].Lines.Take(2))
                 {
                     // Exclude the state name.
